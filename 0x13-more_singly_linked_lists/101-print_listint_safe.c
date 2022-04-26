@@ -1,69 +1,34 @@
 #include "lists.h"
 
 /**
- * free_listp - frees a linked list
- * @head: head of a list.
+ * find_listint_loop - finds the loop in a linked list
+ * @head: linked list to search for
  *
- * Return: no return.
+ * Return: address of the node where the loop starts, or NULL
  */
-void free_listp(listp_t **head)
+listint_t *find_listint_loop(listint_t *head)
 {
-	listp_t *temp;
-	listp_t *curr;
+	listint_t *slow = head;
+	listint_t *fast = head;
 
-	if (head != NULL)
+	if (!head)
+		return (NULL);
+
+	while (slow && fast && fast->next)
 	{
-		curr = *head;
-		while ((temp = curr) != NULL)
+		fast = fast->next->next;
+		slow = slow->next;
+		if (fast == slow)
 		{
-			curr = curr->next;
-			free(temp);
-		}
-		*head = NULL;
-	}
-}
-
-/**
- * print_listint_safe - prints a linked list.
- * @head: head of a list.
- *
- * Return: number of nodes in the list.
- */
-size_t print_listint_safe(const listint_t *head)
-{
-	size_t nnodes = 0;
-	listp_t *hptr, *new, *add;
-
-	hptr = NULL;
-	while (head != NULL)
-	{
-		new = malloc(sizeof(listp_t));
-
-		if (new == NULL)
-			exit(98);
-
-		new->p = (void *)head;
-		new->next = hptr;
-		hptr = new;
-
-		add = hptr;
-
-		while (add->next != NULL)
-		{
-			add = add->next;
-			if (head == add->p)
+			slow = head;
+			while (slow != fast)
 			{
-				printf("-> [%p] %d\n", (void *)head, head->n);
-				free_listp(&hptr);
-				return (nnodes);
+				slow = slow->next;
+				fast = fast->next;
 			}
+			return (fast);
 		}
-
-		printf("[%p] %d\n", (void *)head, head->n);
-		head = head->next;
-		nnodes++;
 	}
 
-	free_listp(&hptr);
-	return (nnodes);
+	return (NULL);
 }
